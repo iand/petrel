@@ -2,6 +2,7 @@ package petrel
 
 import (
 	"io"
+	"log"
 	"net"
 )
 
@@ -44,5 +45,15 @@ func (s *Server) Serve(l net.Listener) error {
 
 // ServeConn runs the server on a single connection in blocking mode.
 func (s *Server) ServeConn(conn io.ReadWriteCloser) {
-	//buf := bufio.NewWriter(conn)
+	codec := TextCodec{}
+	var msg Message
+
+	defer conn.Close()
+	err := codec.Decode(conn, &msg)
+	if err != nil {
+		log.Printf("error: %v\n", err)
+		return
+	}
+
+	log.Printf("data: %+v\n", msg)
 }
